@@ -1,43 +1,30 @@
-import pandas as pd
+# CLAUDE.md
 
+## Project Overview
+This repository contains a small People Analytics case study for BrightPath Manufacturing.
+The goal is to analyze employee attrition using Python and improve the codebase safely.
 
-def attrition_rate(df: pd.DataFrame) -> float:
-    leavers = df[df["attrition"] == "Yes"]
-    return round((len(leavers) / len(df)) * 100, 2)
+## What Good Work Looks Like
+- Keep solutions simple and beginner-friendly
+- Prefer readable pandas code over clever code
+- Explain business meaning, not just code changes
+- Preserve the column names in the raw CSV unless the task requires otherwise
 
+## When Editing Code
+- Change only what is needed for the task
+- Avoid broad refactors unless asked
+- Before major edits, briefly state the plan
+- After edits, recommend how to verify the result
 
-def attrition_by_department(df: pd.DataFrame) -> pd.DataFrame:
-    grouped = df.groupby("department").agg(
-        employees=("employee_id", "count"),
-        leavers=("attrition", lambda s: (s == "Yes").sum()),
-    )
-    grouped["attrition_rate"] = round((grouped["leavers"] / grouped["employees"]) * 100, 2)
-    return grouped.sort_values("attrition_rate", ascending=False).reset_index()
+## Analysis Expectations
+Focus on patterns tied to:
+- department
+- overtime
+- travel frequency
+- job satisfaction
+- monthly income
 
-
-def attrition_by_overtime(df: pd.DataFrame) -> pd.DataFrame:
-    grouped = df.groupby("overtime").agg(
-        employees=("employee_id", "count"),
-        leavers=("attrition", lambda s: (s == "Yes").sum()),
-    )
-    grouped["attrition_rate"] = round((grouped["leavers"] / grouped["employees"]) * 100, 2)
-    return grouped.reset_index()
-
-
-def average_income_by_attrition(df: pd.DataFrame) -> pd.DataFrame:
-    return (
-        df.groupby("attrition")["monthly_income"]
-        .mean()
-        .round(2)
-        .reset_index(name="avg_monthly_income")
-    )
-
-
-def satisfaction_summary(df: pd.DataFrame) -> pd.DataFrame:
-    grouped = (
-        df.groupby("job_satisfaction")
-        .agg(total_employees=("employee_id", "count"), leavers=("attrition", lambda s: (s == "Yes").sum()))
-        .reset_index()
-    )
-    grouped["attrition_rate"] = round((grouped["leavers"] / (df["attrition"] == "Yes").sum()) * 100, 2)
-    return grouped.sort_values("job_satisfaction")
+## Testing
+Run:
+- `pytest`
+- `python src/analyze_attrition.py`
